@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-export class ValidationError extends Error { }
+export class ValidationError extends Error {//dopisać }
 
 export const handleError = (err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
