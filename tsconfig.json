@@ -3,7 +3,7 @@
       "noImplicitAny": true,
       "preserveConstEnums": true, 
       "sourceMap": false, 
-      "target": "ES6", 
+      "target": "ES5", 
       "downlevelIteration": true,
       "lib": ["dom", "es6", "dom.iterable"], 
       "moduleResolution": "Node",

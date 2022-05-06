@@ -8,31 +8,35 @@ import { FieldPacket } from 'mysql2';
 type UserRecordType = [LoginData[], FieldPacket[]];
 
 export class UserRecord {
-    private login: string;
-    private password: string;
-    private id?: string;
-    private key?: string;
+    private _login: string;
+    private _password: string;
+    private _id?: string;
+    private _key?: string;
 
     constructor(userData: LoginData) {
         if (userData.login.length < 5 || userData.password.length < 6) {
-            throw new ValidationError('Login musi mieć conajmniej 5 znaków a hasło conajmniej 6 znaków')
+            throw new ValidationError('Login need to have more or equal than 5 signs and password more than 5')
         }
 
-        this.login = userData.login;
-        this.password = userData.password;
-        this.id = userData.id;
-        this.key = userData.key
+        if (userData.login.length > 25) {
+            throw new ValidationError('Login can`t have more than 25 characters')
+        }
+
+        this._login = userData.login;
+        this._password = userData.password;
+        this._id = userData.id;
+        this._key = userData.key
     };
 
     async add(): Promise<string> {
-        if (!this.id) {
-            this.id = uuid();
+        if (!this._id) {
+            this._id = uuid();
         }
         try {
-            const data = await hasher(this.password);
-            pool.execute("INSERT INTO `users`(`id`, `login`, `password`, `key`) VALUES (:id, :login, :password, :key)", {
-                id: this.id,
-                login: this.login,
+            const data = await hasher(this._password);
+            await pool.execute("INSERT INTO `users`(`id`, `login`, `password`, `ivkey`) VALUES (:id, :login, :password, :key)", {
+                id: this._id,
+                login: this._login,
                 password: data.coded,
                 key: data.iv
             })
@@ -40,20 +44,31 @@ export class UserRecord {
             throw new Error('Error during adding new user to database i user record module');
             //obsługa + zapis do errorloga
         }
-        return this.id;
+        return this._id;
     }
 
     async patch(): Promise<void> {
         try {
-            const data = await hasher(this.password);
-            pool.execute("UPDATE `users` SET `login` = :login, `password` = :password, `key` = :key WHERE `id` = :id", {
-                id: this.id,
-                login: this.login,
+            const data = await hasher(this._password);
+            await pool.execute("UPDATE `users` SET `login` = :login, `password` = :password, `ivkey` = :key WHERE `id` = :id", {
+                id: this._id,
+                login: this._login,
                 password: data.coded,
                 key: data.iv
             })
         } catch (err) {
-            throw new Error('Error during adding new user to database i user record module');
+            throw new Error('Error during adding new user to database in user record module');
+        }
+    }
+
+    async delete(): Promise<string> {
+        try {
+            await pool.execute("DELETE FROM `users` WHERE `id` = :id", {
+                id: this._id
+            });
+            return this._id
+        } catch (err) {
+            throw new Error('Error during removing new user from database in user record module');
         }
     }
 
@@ -73,16 +88,28 @@ export class UserRecord {
 
     get showPasswordData(): Code {
         return ({
-            coded: this.password,
-            iv: this.key
+            coded: this._password,
+            iv: this._key
         })
     }
 
+    get showID(): string {
+        return this._id;
+    }
+
+    get showLogin(): string {
+        return this._login;
+    }
+
     set newLogin(login: string) {
-        this.login = login;
+        this._login = login;
     }
 
     set newPassword(password: string) {
-        this.password = password
+        this._password = password;
     }
 }
+
+
+
+

@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';;
+import { promises as fs } from 'fs';
 import { hash, compare } from 'bcrypt';
 import { promisify } from 'util';
 import * as crypto from 'crypto';
@@ -11,14 +11,15 @@ const algorithm = appSettings.algorithm;
 const iterations = appSettings.iterations
 
 const readConfig = async (): Promise<Config> => {
-    const userConfigData = await fs.readFile('./crData.txt', {
+    const pathName = 'C:/Users/TECHGLASS/Desktop/toolbase project/backend/utils/crData.json'
+    const userConfigData = await fs.readFile(pathName, {
         encoding: 'utf-8'
     });
     const readed = JSON.parse(userConfigData) as Config;
     return readed;
 }
 
-const coding = async (toCode: string): Promise<Code> => {
+export const coding = async (toCode: string): Promise<Code> => {
     try {
         const readed = await readConfig();
         const key = await scrypter(readed.password, readed.salt, iterations);
@@ -39,7 +40,7 @@ const coding = async (toCode: string): Promise<Code> => {
 
 };
 
-const decoding = async (toDecode: string, iv: string): Promise<string> => {
+export const decoding = async (toDecode: string, iv: string): Promise<string> => {
     try {
         const readed = await readConfig();
         const key = await scrypter(readed.password, readed.salt, iterations);
@@ -58,10 +59,11 @@ const decoding = async (toDecode: string, iv: string): Promise<string> => {
 
 export const hasher = async (password: string): Promise<Code> => {
     try {
-        const codedPassword = await coding(password);
-        const hashed = await hash(codedPassword.coded, 12) as string;
+
+        const hashed = await hash(password, 12);
+        const codedPassword = await coding(hashed);
         return {
-            coded: hashed,
+            coded: codedPassword.coded,
             iv: codedPassword.iv
         };
     } catch (err) {
