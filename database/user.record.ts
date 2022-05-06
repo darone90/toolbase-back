@@ -11,21 +11,21 @@ export class UserRecord {
     private _login: string;
     private _password: string;
     private _id?: string;
-    private _key?: string;
+    private _ivkey?: string;
 
     constructor(userData: LoginData) {
         if (userData.login.length < 5 || userData.password.length < 6) {
             throw new ValidationError('Login need to have more or equal than 5 signs and password more than 5')
         }
 
-        if (userData.login.length > 25) {
-            throw new ValidationError('Login can`t have more than 25 characters')
+        if (userData.login.length > 25 || userData.password.length > 140) {
+            throw new ValidationError('Login and password can`t have more than 25 characters')
         }
 
         this._login = userData.login;
         this._password = userData.password;
         this._id = userData.id;
-        this._key = userData.key
+        this._ivkey = userData.ivkey
     };
 
     async add(): Promise<string> {
@@ -89,7 +89,7 @@ export class UserRecord {
     get showPasswordData(): Code {
         return ({
             coded: this._password,
-            iv: this._key
+            iv: this._ivkey
         })
     }
 
@@ -109,7 +109,5 @@ export class UserRecord {
         this._password = password;
     }
 }
-
-
 
 

@@ -12,13 +12,15 @@ loginRouter
         try {
             const User = await UserRecord.getOne(login);
             if (!User) {
-                res.json({ login: false, info: 'Użytkownik o podanej nazwie nie istnieje', token: '' });
+                res.json({ login: false, info: 'Not existed', token: null });
+
             } else {
                 const loginData = User.showPasswordData;
                 const logStatus = await comparer(password, loginData.coded, loginData.iv);
+
                 logStatus ?
-                    res.json({ login: true, info: `Użytkownik ${login} zalogowany`, token: appSettings.token })
-                    : res.json({ login: false, info: `Hasło dla ${login} nieprawidłowe`, token: '' })                 
+                    res.json({ login: true, info: `Correct`, token: appSettings.token })
+                    : res.json({ login: false, info: `Uncorrect`, token: null })                 
             }
         } catch (err) {
             throw new Error('Login Router error');

@@ -2,7 +2,7 @@ export interface LoginData {
     login: string;
     password: string;
     id?: string;
-    key?: string;
+    ivkey?: string;
 }
 
 export interface Code {
