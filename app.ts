@@ -5,6 +5,7 @@ import { handleError } from './utils/error';
 import { appSettings } from './utils/config';
 
 import loginRouter from './routers/login';
+import categoryRouter from './routers/types'
 
 
 const app = express();
@@ -19,7 +20,9 @@ app.use(urlencoded({
 
 app.use(express.json());
 app.use(handleError);
+
 app.use('/login', loginRouter);
+app.use('/category', categoryRouter);
 
 app.set('x-powered-by', false);
 

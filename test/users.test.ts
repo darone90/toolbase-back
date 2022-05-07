@@ -55,5 +55,5 @@ test('finding patching and deleting instance of user', async () => {
 })
 
 afterAll(async () => {
-    pool.end();
+    await pool.end();
 })

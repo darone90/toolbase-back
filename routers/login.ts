@@ -24,6 +24,7 @@ loginRouter
             }
         } catch (err) {
             throw new Error('Login Router error');
+            //send error to front
         }
     });
 
