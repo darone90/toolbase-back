@@ -1,62 +1,30 @@
 import request from 'supertest';
 import app from '../app';
-import { appSettings } from '../utils/config';
-import { UserRecord } from '../database/user.record';
+
 import { pool } from '../utils/db';
 import { TypesRecord } from '../database/types.record';
 
-const testingData = {
-    login: 'TestTest',
-    password: '12345678'
-};
+
 
 const testingData1 = { name: 'Szlifierka', types: ['kątowa', 'prosta', 'taśmowa'] };
 const testingData2 = { name: 'Spawarka', types: ['TIG', 'MMA', 'MIG/MAG'] };
+
+
 let id1: string;
 let id2: string;
 let id3: string;
 
+
 beforeAll(async () => {
-    const newUser = new UserRecord(testingData);
-    await newUser.add();
+
 
     const newUser1 = new TypesRecord(testingData1);
     const newUser2 = new TypesRecord(testingData2);
 
     id1 = await newUser1.add();
     id2 = await newUser2.add();
-})
-
-
-test('post login without data', async () => {
-    await request(app)
-        .post('/login')
-        .send({ login: '', password: '' })
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .expect({ login: false, info: 'Not existed', token: null })
-
 });
 
-test('post login with wrong password', async () => {
-    await request(app)
-        .post('/login')
-        .send({ login: testingData.login, password: 'wrongPassword' })
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .expect({ login: false, info: `Uncorrect`, token: null })
-
-});
-
-test('post to login with correct data', async () => {
-    await request(app)
-        .post('/login')
-        .send({ login: testingData.login, password: testingData.password })
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .expect({ login: true, info: `Correct`, token: appSettings.token })
-
-});
 
 test('adding new type to database', async () => {
     await request(app)
@@ -117,7 +85,7 @@ test('getting all types list', async () => {
         .expect(200)
         .then(response => JSON.parse(response.text))
         .then(data => {
-            expect(data.length).toEqual(3);
+            expect(data.length).toBeGreaterThan(2);
         })
         .finally(() => { return })
 });
@@ -158,8 +126,6 @@ test('deleting added types', async () => {
 });
 
 afterAll(async () => {
-    const testedUser = await UserRecord.getOne(testingData.login);
-    await testedUser.delete();
 
     const first = await TypesRecord.getOne(id1);
     const second = await TypesRecord.getOne(id2);

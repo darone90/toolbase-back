@@ -5,7 +5,8 @@ import { handleError } from './utils/error';
 import { appSettings } from './utils/config';
 
 import loginRouter from './routers/login';
-import categoryRouter from './routers/types'
+import categoryRouter from './routers/types';
+import workerRouter from './routers/worker';
 
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(handleError);
 
 app.use('/login', loginRouter);
 app.use('/category', categoryRouter);
+app.use('/workers', workerRouter);
 
 app.set('x-powered-by', false);
 
