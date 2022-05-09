@@ -4,6 +4,9 @@
 export interface History {
     id: string;
     name: string;
+    uuid?: string;
+    start?: string;
+    end?: string;
 }
 
 export interface HistoryWithTool {
@@ -12,6 +15,7 @@ export interface HistoryWithTool {
     subtype: string;
     brand: string;
     serial: string;
+    uuid: string;
     name: string;
     start: string;
     end?: string;
