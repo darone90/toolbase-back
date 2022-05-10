@@ -54,7 +54,7 @@ toolRouter
                 await newWorker.add();
                 const oldWorker = await HistoryRecord.getOne(uuid.uuid);
                 await oldWorker.addEnd();
-
+                res.json({ id })
             }
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -62,3 +62,5 @@ toolRouter
             }
         }
     })
+
+export default toolRouter;

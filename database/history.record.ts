@@ -46,7 +46,7 @@ export class HistoryRecord {
 
     static async getAllFor(name: string): Promise<HistoryWithTool[] | null> {
         try {
-            const [results] = (await pool.execute("SELECT `tools`.sign, `tools`.type, `tools`.subtype, `tools`.brand, `tools`.serial, `history`.uuid, `history`.name, `history`.start ,`history`.end FROM `history` JOIN `tools` ON `history`.id=`tools`.id WHERE `history`.name = :name", {
+            const [results] = (await pool.execute("SELECT `tools`.sign, `tools`.type, `tools`.subtype, `tools`.brand, `tools`.serial, `history`.uuid, `history`.name, `history`.start ,`history`.end FROM `history` JOIN `tools` ON `history`.id=`tools`.id WHERE `history`.name = :name AND `history`.end NOT IN ('NULL')", {
                 name
             })) as HistoryWithToolRecordType;
 
@@ -87,15 +87,30 @@ export class HistoryRecord {
         }
     }
 
-    async clear(): Promise<void> {
+    static async clear(name: string): Promise<void> {
         try {
-            await pool.execute("DELETE FROM `history` WHERE `name` = :name", {
-                name: this.name
+            await pool.execute("DELETE FROM `history` WHERE `name` = :name AND `end` NOT IN ('NULL')", {
+                name
             })
 
         } catch (err: unknown) {
             if (err instanceof Error)
                 throw new Error(`Error clearing all record for worker: ${err.message}`);
+            //obsługa + zapis do errorloga
+        }
+    }
+
+    static async getActual(name: string): Promise<HistoryWithTool[] | null> {
+        try {
+            const [results] = (await pool.execute("SELECT `tools`.sign, `tools`.type, `tools`.subtype, `tools`.brand, `tools`.serial, `history`.uuid, `history`.name, `history`.start ,`history`.end FROM `history` JOIN `tools` ON `history`.id=`tools`.id WHERE `history`.name = :name AND `history`.end IN ('NULL')", {
+                name
+            })) as HistoryWithToolRecordType;
+
+            return results;
+
+        } catch (err: unknown) {
+            if (err instanceof Error)
+                throw new Error(`Error during getting all actual records for worker : ${err.message}`);
             //obsługa + zapis do errorloga
         }
     }

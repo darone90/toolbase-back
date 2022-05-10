@@ -29,7 +29,7 @@ beforeAll(async () => {
     testedToolID = await newTool.add();
 });
 
-test('adding new record to history and gettin list for worker', async () => {
+test('adding new record to history', async () => {
     const newHistoryRecord = new HistoryRecord({ id: testedToolID, name: testedWorkerName });
     historyID1 = await newHistoryRecord.add();
     const secondNewHistoryRecord = new HistoryRecord({ id: testedToolID, name: testedWorkerName });
@@ -38,12 +38,9 @@ test('adding new record to history and gettin list for worker', async () => {
     expect(historyID1).toMatch(/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/);
     expect(historyID2).toMatch(/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/);
 
-    const list = await HistoryRecord.getAllFor(testedWorkerName);
-    expect(list).not.toBeNull();
-    expect(list.length).toBeGreaterThan(1);
 });
 
-test('finding and adding end date to records', async () => {
+test('finding and adding end date to records and getting list', async () => {
     const findRecord = await HistoryRecord.getOne(historyID1);
     expect(findRecord).not.toBeNull();
     expect(findRecord.showID).toEqual(historyID1);
@@ -53,12 +50,14 @@ test('finding and adding end date to records', async () => {
     const reload = await HistoryRecord.getOne(historyID1);
     expect(reload.showData.end).not.toBeNull();
 
+    const list = await HistoryRecord.getAllFor(testedWorkerName);
+    expect(list).not.toBeNull();
+    expect(list.length).toBeGreaterThan(0);
 })
 
 test('clearing history records', async () => {
-    const recordOne = await HistoryRecord.getOne(historyID1);
 
-    await recordOne.clear();
+    await HistoryRecord.clear(testedWorkerName);
 
     const list = await HistoryRecord.getAllFor(testedWorkerName);
     expect(list.length).toBeLessThan(1);

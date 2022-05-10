@@ -15,11 +15,21 @@ historyRouter
         }
     })
 
-    .delete('/:uuid', async (req, res) => {
-        const { uuid } = req.params
+    .get('/actual/:name', async (req, res) => {
+        const { name } = req.params;
         try {
-            const worker = await HistoryRecord.getOne(uuid);
-            await worker.clear();
+            const data = await HistoryRecord.getActual(name);
+            res.json(data);
+        } catch (err) {
+            throw new Error(`get all tools list err: ${err}`);
+            //send err to front
+        }
+    })
+
+    .delete('/:name', async (req, res) => {
+        const { name } = req.params
+        try {
+            await HistoryRecord.clear(name);
             res.json({ ok: true });
         } catch (err) {
             throw new Error(`get all tools list err: ${err}`);
