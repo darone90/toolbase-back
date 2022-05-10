@@ -1,6 +1,7 @@
 import { pool } from '../utils/db';
 import { ToolsRecord } from '../database/tool.record';
 import { WorkersRecord } from '../database/worker.record';
+import { HistoryRecord } from '../database/history.record';
 
 const testWorkerNameOne = 'Janusz Kowalski';
 const testWorkerNameTwo = 'Jarosław Kaczyński';
@@ -44,7 +45,9 @@ beforeAll(async () => {
     const testingWorkerTwo = new WorkersRecord({ name: testWorkerNameTwo });
 
     workerID1 = await testingWorkerOne.add();
+
     workerID2 = await testingWorkerTwo.add();
+
 })
 
 test('adding record to database with wrong datas', async () => {
@@ -84,7 +87,11 @@ test('adding two records to database', async () => {
     const secondCorrect = new ToolsRecord(testData2);
 
     toolID1 = await firstCorrect.add();
+
+
     toolID2 = await secondCorrect.add();
+    const historytwo = new HistoryRecord({ id: toolID2, name: testWorkerNameTwo });
+    await historytwo.add()
 
     expect(toolID1).toMatch(/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/);
     expect(toolID2).toMatch(/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/);
@@ -95,7 +102,9 @@ test('getting one and actualize data', async () => {
     const toActualize = await ToolsRecord.getOne(toolID2);
     expect(toActualize).not.toBeNull();
 
-    await toActualize.actualize(actualizePackage);
+    const uuid = await toActualize.actualize(actualizePackage);
+
+    expect(uuid.uuid).toMatch(/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/);
 
     const actualized = await ToolsRecord.getOne(toolID2);
 
@@ -103,6 +112,9 @@ test('getting one and actualize data', async () => {
     expect(actualized.showID).toEqual(toolID2);
 
     expect(toActualize.showStatuses).not.toEqual(actualized.showStatuses);
+
+    const record = await HistoryRecord.getOne(uuid.uuid);
+    await record.clear();
 })
 
 test('getting list of all tools', async () => {

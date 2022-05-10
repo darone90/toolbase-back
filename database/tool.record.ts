@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { FieldPacket } from 'mysql2';
 
 export type ToolsRecordType = [ToolsData[], FieldPacket[]];
+type WorkerUUID = [{ uuid: string }[], FieldPacket[]];
 
 export class ToolsRecord {
 
@@ -93,7 +94,7 @@ export class ToolsRecord {
         }
     }
 
-    async actualize(data: ActualizePackage): Promise<void> {
+    async actualize(data: ActualizePackage): Promise<{ uuid: string }> {
         try {
             await pool.execute("UPDATE `tools` SET `name` = :name, `status` = :status, `place` = :place WHERE `id` = :id", {
                 id: this.id,
@@ -101,8 +102,16 @@ export class ToolsRecord {
                 status: data.status,
                 place: data.place
             })
-        } catch (err) {
-            throw new Error('Error during updating statuses in tools database');
+
+            const [results] = (await pool.execute("SELECT `history`.uuid FROM `tools` JOIN `history` ON `tools`.id=`history`.id WHERE `history`.name = :name", {
+                name: this.name
+            })) as WorkerUUID;
+
+            return results[0];
+        } catch (err: unknown) {
+            if (err instanceof Error)
+                throw new Error(`Error during actualiztaion: ${err.message}`);
+            //obsługa + zapis do errorloga
         }
     }
 
