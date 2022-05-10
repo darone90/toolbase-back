@@ -8,6 +8,7 @@ import loginRouter from './routers/login';
 import categoryRouter from './routers/types';
 import workerRouter from './routers/worker';
 import toolRouter from './routers/tools';
+import historyRouter from './routers/history';
 
 
 
@@ -28,6 +29,7 @@ app.use('/login', loginRouter);
 app.use('/category', categoryRouter);
 app.use('/workers', workerRouter);
 app.use('/tools', toolRouter);
+app.use('/history', historyRouter);
 
 app.set('x-powered-by', false);
 

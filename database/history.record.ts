@@ -102,7 +102,7 @@ export class HistoryRecord {
 
     static async getActual(name: string): Promise<HistoryWithTool[] | null> {
         try {
-            const [results] = (await pool.execute("SELECT `tools`.sign, `tools`.type, `tools`.subtype, `tools`.brand, `tools`.serial, `history`.uuid, `history`.name, `history`.start ,`history`.end FROM `history` JOIN `tools` ON `history`.id=`tools`.id WHERE `history`.name = :name AND `history`.end IN ('NULL')", {
+            const [results] = (await pool.execute("SELECT `tools`.sign, `tools`.type, `tools`.subtype, `tools`.brand, `tools`.serial, `history`.uuid, `history`.name, `history`.start ,`history`.end FROM `history` JOIN `tools` ON `history`.id=`tools`.id WHERE `history`.name = :name AND `history`.end IS NULL", {
                 name
             })) as HistoryWithToolRecordType;
 

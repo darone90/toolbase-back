@@ -15,8 +15,8 @@ historyRouter
         }
     })
 
-    .get('/actual/:name', async (req, res) => {
-        const { name } = req.params;
+    .post('/actual', async (req, res) => {
+        const { name } = req.body;
         try {
             const data = await HistoryRecord.getActual(name);
             res.json(data);
@@ -36,3 +36,5 @@ historyRouter
             //send err to front
         }
     })
+
+export default historyRouter;

@@ -13,6 +13,8 @@ let testWorkerID2: string;
 
 let tool1: string;
 
+let historyID1: string;
+
 
 const testData1 = {
     sign: "220099",
@@ -37,7 +39,7 @@ beforeAll(async () => {
     const history2 = new HistoryRecord({ id: tool1, name: testWorkerNameTwo });
 
     await history1.add();
-    await history2.add();
+    historyID1 = await history2.add();
 
     await history1.addEnd();
 })
@@ -49,13 +51,56 @@ test('getting list of archived records', async () => {
         .expect(200)
         .then((resp) => JSON.parse(resp.text))
         .then(data => {
-            expect(data.length).not.toBeNull();
+            expect(data).not.toBeNull();
             expect(data.length).toBeGreaterThan(0);
         })
 });
 
+test('getting list of actual record', async () => {
+    await request(app)
+        .post(`/history/actual`)
+        .send({ name: testWorkerNameTwo })
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then((resp) => JSON.parse(resp.text))
+        .then(data => {
+            expect(data).not.toBeNull();
+            expect(data.length).toBeGreaterThan(0);
+        })
+});
+
+test('deleting archived', async () => {
+    await request(app)
+        .delete(`/history/${testWorkerNameOne}`)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .expect({ ok: true })
+
+    await request(app)
+        .get(`/history/${testWorkerNameOne}`)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then((resp) => JSON.parse(resp.text))
+        .then(data => {
+            expect(data.length).toEqual(0);
+        })
+});
 
 afterAll(async () => {
+    const secondHistoryInstance = await HistoryRecord.getOne(historyID1);
+    await secondHistoryInstance.addEnd();
+    await HistoryRecord.clear(testWorkerNameTwo);
+
+    const testedTool = await ToolsRecord.getOne(tool1);
+    await testedTool.delete();
+
+
+    const worker1 = await WorkersRecord.getOne(testWorkerID1);
+    const worker2 = await WorkersRecord.getOne(testWorkerID2);
+
+    await worker1.delete();
+    await worker2.delete();
+
 
     pool.end()
 })
