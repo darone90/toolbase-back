@@ -26,8 +26,8 @@ export class ToolsRecord {
         if (toolsData.name.length > 50 || toolsData.name.length < 3) {
             throw new ValidationError('Name can`t have more than 50 and less than 3 characters')
         }
-        if (toolsData.status.length > 7 || toolsData.status.length < 4) {
-            throw new ValidationError('status can`t have more than 7 and less than 3 characters')
+        if (toolsData.status.length > 50 || toolsData.status.length < 4) {
+            throw new ValidationError('status can`t have more than 50 and less than 3 characters')
         }
         if (toolsData.place.length > 30) {
             throw new ValidationError('Place can`t have more than 30 characters')

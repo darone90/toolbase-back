@@ -16,6 +16,17 @@ toolRouter
         }
     })
 
+    .get('/:id', async (req, res) => {
+        const { id } = req.params;
+        try {
+            const data = await ToolsRecord.getOne(id);
+            res.json(data);
+        } catch (err) {
+            throw new Error(`get one tools from list err: ${err}`);
+            //send err to front
+        }
+    })
+
     .post('/', async (req, res) => {
         const { sign, name, status, place, type, subtype, brand, serial } = req.body;
         try {
@@ -54,8 +65,8 @@ toolRouter
                 await newWorker.add();
                 const oldWorker = await HistoryRecord.getOne(uuid.uuid);
                 await oldWorker.addEnd();
-                res.json({ id })
             }
+            res.json({ id })
         } catch (err: unknown) {
             if (err instanceof Error) {
                 throw new Error(`actualize tool statuses list err: ${err.message}`);

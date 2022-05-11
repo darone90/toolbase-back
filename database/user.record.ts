@@ -50,11 +50,21 @@ export class UserRecord {
     async patch(): Promise<void> {
         try {
             const data = await hasher(this._password);
-            await pool.execute("UPDATE `users` SET `login` = :login, `password` = :password, `ivkey` = :key WHERE `id` = :id", {
+            await pool.execute("UPDATE `users` SET `password` = :password, `ivkey` = :key WHERE `id` = :id", {
                 id: this._id,
-                login: this._login,
                 password: data.coded,
                 key: data.iv
+            })
+        } catch (err) {
+            throw new Error('Error during adding new user to database in user record module');
+        }
+    }
+
+    async patchLogin(): Promise<void> {
+        try {
+            await pool.execute("UPDATE `users` SET `login` = :login WHERE `id` = :id", {
+                id: this._id,
+                login: this._login
             })
         } catch (err) {
             throw new Error('Error during adding new user to database in user record module');
@@ -109,5 +119,12 @@ export class UserRecord {
         this._password = password;
     }
 }
+
+// const put = async () => {
+//     const newGregor = new UserRecord({ login: 'Mario', password: 'Bross123' })
+//     await newGregor.add();
+// }
+
+// put();
 
 

@@ -127,10 +127,3 @@ export class HistoryRecord {
         }
     }
 }
-
-// const test = async () => {
-//     const add = await HistoryRecord.getAllFor("Janusz Testowy");
-//     console.log(add);
-// }
-
-// test();

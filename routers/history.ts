@@ -4,7 +4,7 @@ import { HistoryRecord } from '../database/history.record';
 const historyRouter = Router();
 
 historyRouter
-    .get('/:name', async (req, res) => {
+    .get('/archived/:name', async (req, res) => {
         const { name } = req.params;
         try {
             const data = await HistoryRecord.getAllFor(name);
@@ -15,8 +15,8 @@ historyRouter
         }
     })
 
-    .post('/actual', async (req, res) => {
-        const { name } = req.body;
+    .get('/actual/:name', async (req, res) => {
+        const { name } = req.params;
         try {
             const data = await HistoryRecord.getActual(name);
             res.json(data);
@@ -26,8 +26,8 @@ historyRouter
         }
     })
 
-    .delete('/:name', async (req, res) => {
-        const { name } = req.params
+    .delete('/', async (req, res) => {
+        const { name } = req.body
         try {
             await HistoryRecord.clear(name);
             res.json({ ok: true });
