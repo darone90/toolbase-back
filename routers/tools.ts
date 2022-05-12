@@ -1,33 +1,32 @@
 import { Router } from 'express';
 import { ToolsRecord } from '../database/tool.record';
 import { HistoryRecord } from '../database/history.record';
+import { handleError } from '../utils/error';
 
 const toolRouter = Router();
 
 toolRouter
 
-    .get('/', async (req, res) => {
+    .get('/', async (req, res, next) => {
         try {
             const data = await ToolsRecord.getAll();
             res.json(data);
         } catch (err) {
-            throw new Error(`get all tools list err: ${err}`);
-            //send err to front
+            handleError(err, req, res, next);
         }
     })
 
-    .get('/:id', async (req, res) => {
+    .get('/:id', async (req, res, next) => {
         const { id } = req.params;
         try {
             const data = await ToolsRecord.getOne(id);
             res.json(data);
         } catch (err) {
-            throw new Error(`get one tools from list err: ${err}`);
-            //send err to front
+            handleError(err, req, res, next);
         }
     })
 
-    .post('/', async (req, res) => {
+    .post('/', async (req, res, next) => {
         const { sign, name, status, place, type, subtype, brand, serial } = req.body;
         try {
             const tool = new ToolsRecord({ sign, name, status, place, type, subtype, brand, serial });
@@ -36,25 +35,22 @@ toolRouter
             await history.add();
             res.json({ id });
         } catch (err) {
-            throw new Error(`put new tool to list err: ${err}`);
-            //send err to front
+            handleError(err, req, res, next);
         }
     })
 
-    .delete('/', async (req, res) => {
+    .delete('/', async (req, res, next) => {
         const { id } = req.body;
         try {
             const tool = await ToolsRecord.getOne(id);
             const idn = await tool.delete();
             res.json({ id: idn });
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                throw new Error(`delete tool from list err: ${err.message}`);
-            }
+        } catch (err) {
+            handleError(err, req, res, next);
         }
     })
 
-    .patch('/', async (req, res) => {
+    .patch('/', async (req, res, next) => {
         const { id, name, status, place } = req.body;
         try {
             const actualizeRecord = await ToolsRecord.getOne(id);
@@ -67,10 +63,8 @@ toolRouter
                 await oldWorker.addEnd();
             }
             res.json({ id })
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                throw new Error(`actualize tool statuses list err: ${err.message}`);
-            }
+        } catch (err) {
+            handleError(err, req, res, next);
         }
     })
 

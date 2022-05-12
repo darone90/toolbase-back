@@ -1,12 +1,29 @@
 import { NextFunction, Request, Response } from "express";
+import path from 'path';
+import * as fs from "fs";
 
 export class ValidationError extends Error { };
 
-export const handleError = (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const handleError = async (err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
-
-    res
+    res 
+        .json({ error: 'Huston we have a problem...' })
         .status(err instanceof ValidationError ? 400 : 500);
-    // dodać zapis do logu błędów
-    //jakoś dać zanać na front że jest błąd
+
+
+    const errorLog = await fs.promises.readFile(path.join(__dirname, 'errorLog.json'), 'utf-8');
+    const errArr = JSON.parse(errorLog);
+    const newError = {
+        time: new Date().toISOString(),
+        info: err.message
+    }
+    errArr.push(newError);
+    const errToSave = JSON.stringify(errArr);
+    await fs.promises.writeFile(path.join(__dirname, 'errorLog.json'), errToSave, 'utf-8');
 }
+
+export const readError = async () => {
+    const errorLog = await fs.promises.readFile(path.join(__dirname, 'errorLog.json'), 'utf-8');
+    const errArr = JSON.parse(errorLog);
+    return errArr
+} 

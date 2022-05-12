@@ -24,7 +24,7 @@ loginRouter
             }
         } catch (err) {
             throw new Error('Login Router error');
-            //send error to front
+            // send error to front
         }
     })
     .patch('/password', async (req, res) => {

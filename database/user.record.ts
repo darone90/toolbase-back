@@ -120,11 +120,6 @@ export class UserRecord {
     }
 }
 
-// const put = async () => {
-//     const newGregor = new UserRecord({ login: 'Mario', password: 'Bross123' })
-//     await newGregor.add();
-// }
 
-// put();
 
 
