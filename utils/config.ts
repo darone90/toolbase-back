@@ -1,3 +1,5 @@
+import { appConfig } from '../config.data';
+
 interface Config {
     port: number;
     algorithm: string;
@@ -6,8 +8,8 @@ interface Config {
 }
 
 export const appSettings: Config = {
-    port: 8080,
-    algorithm: 'aes-192-cbc',
-    iterations: 24,
-    token: '@1324fsrllokiuystf123'
+    port: appConfig.port,
+    algorithm: appConfig.algorithm,
+    iterations: appConfig.iterations,
+    token: appConfig.token
 }

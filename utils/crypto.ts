@@ -11,7 +11,7 @@ const algorithm = appSettings.algorithm;
 const iterations = appSettings.iterations
 
 const readConfig = async (): Promise<Config> => {
-    const pathName = 'C:/Users/TECHGLASS/Desktop/toolbase project/backend/utils/crData.json'
+    const pathName = 'C:/Users/TECHGLASS/Desktop/toolbase project/backend/crData.json'
     const userConfigData = await fs.readFile(pathName, {
         encoding: 'utf-8'
     });
