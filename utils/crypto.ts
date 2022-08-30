@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import * as crypto from 'crypto';
 import { appSettings } from './config';
 import { Code, Config } from '../types/user.types';
+import { error } from 'console';
 
 const scrypter = promisify(crypto.scrypt);
 const randomByter = promisify(crypto.randomBytes);
@@ -52,6 +53,7 @@ export const decoding = async (toDecode: string, iv: string): Promise<string> =>
 
         return decrypted;
     } catch (err) {
+        console.log(err);
         throw new Error('decoding error');
         //dopisać zapisanie w errorlogu
     }
