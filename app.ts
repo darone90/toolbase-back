@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'express-async-errors';
 import { handleError } from './utils/error';
 import { appSettings } from './utils/config';
+import cookieParser from 'cookie-parser';
 
 import loginRouter from './routers/login';
 import categoryRouter from './routers/types';
@@ -15,13 +16,15 @@ import historyRouter from './routers/history';
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:3000'
+    origin: 'http://localhost:3000',
+    credentials: true,
 }));
 
 app.use(urlencoded({
     extended: true
 }));
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(handleError);
 
